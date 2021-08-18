@@ -64,19 +64,26 @@ double integral(double x){
     return 0.5 * (sqrt(2*x - x*x) -x*(sqrt(2*x - x*x) - 2) + 2*asin(sqrt(1 - x/2.0)));
 }
 
+double arc_integral(double x, double r, double a, double b) {
+    return x * r * (sin(b) - sin(a)) + r * r * 0.5 * (0.5 * (sin(2*b) - sin(2*a)) + b - a);
+}
+
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0);
-    repx(i, 15, 16){
+    repx(i, 1, 3){
         double angle = atan(1.0 / double(i));
-        P p = P(1.0 - cos(angle), 1.0 - sin(angle));
-        cerr<<angle<<" "<<p.x<<" "<<p.y<<" "<<angle<<"\n";
-        //double a1 = sqrt(2) * sin(angle) * sin(angle) / 2 + 1 - p.x;
-        double a1 = integral(1) - integral(p.x);
-        double a2 = p.x * p.y / 2.0;
-        cerr<<a1<<" "<<a2<<"\n";
-        cerr<<a1+a2<<" "<<(4.0-PI)/4.0<<"\n";
-        cout<<"porcion: "<<(a1 + a2) / ((4.0 - PI)/4.0)<<"\n";
+        cerr<<angle<<'\n';
+        P p = P(1 + cos(3.0 * PI / 2.0 - angle), 1 + sin(3.0 * PI / 2.0 - angle));
+        //cerr<<angle<<" "<<p.x<<" "<<p.y<<"\n";
+        //double a1 = 1 - sin(angle) + 0.5 * angle - 0.25 * PI + 0.25 * sin(2.0 * angle);
+        double a1 = arc_integral(1.0, 1.0, 3.0 * PI / 2.0 - angle, 3.0 * PI / 2.0);
+        double a2 = 0.5 * p.x * p.y;
+        cerr<<angle<<' '<< arc_integral(1.0, 1.0, 3.0 * PI / 2.0 - angle, 3.0 * PI / 2.0)<<' '<<a2<<'\n';
+        //cerr<<a2<<'\n';
+        //cerr<<a1<<" "<<a2<<"\n";
+        //cerr<<a1 - a2<<" "<<(4.0 - PI)/4.0<<"\n";
+        cout<<i<<" porcion: "<<(a1 - a2) / ((4.0 - PI)/4.0) * 100<<"\n";
     }
 
 

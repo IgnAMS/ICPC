@@ -44,8 +44,7 @@ struct LCA{
     vector<vector<int>> up;
     vector<int> D;
     vector<vector<ll>> maxw;
-    vector<vector<ii>> T;
-    LCA(int n, vector<vector<ii>>& T): n(n), T(T) {
+    LCA(int n): n(n){
         l = log2(n) + 1;
         D.assign(n, -1); up.assign(n, vector<int>(l, -1));
         maxw.assign(n, vector<ll>(l, 0));
@@ -57,7 +56,6 @@ struct LCA{
                 maxw[u][e] = max(maxw[a][e-1], maxw[u][e-1]);
             }
             else up[u][e] = -1;
-        
         }
     }
 
@@ -91,19 +89,20 @@ int main(){
     ios::sync_with_stdio(0); cin.tie(0);
     int n, m; cin>>n>>m;
     vector<Edge> E; T.assign(n, {});
-    ll mat[n][n];
+    // ll mat[n][n];
+    map<ii,int> mapa; 
     rep(i,m){
         int u, v, w; cin>>u>>v>>w; u--, v--;
         E.emplace_back(u, v, w);
-        mat[u][v] = w;
-        mat[v][u] = w;
+        mapa[{u, v}] = w;
+        mapa[{v, u}] = w;
     }
     MST mst = MST(n, E);
-    LCA lca = LCA(n, T);
+    LCA lca = LCA(n);
     int q; cin>>q;
     while(q--){
         int u, v; cin>>u>>v; u--, v--;
-        cout<<mst.w + mat[u][v] - lca.maxi(u, v)<<"\n";
+        cout<<mst.w + mapa[{u, v}] - lca.maxi(u, v)<<"\n";
     }
     
     return 0;

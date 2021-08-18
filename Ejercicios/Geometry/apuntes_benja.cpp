@@ -1,6 +1,6 @@
 
 const db PI = acos(-1.0L);
-const db EPS =  
+const db EPS = 1e-12;
 
 // POINT 2D
 
