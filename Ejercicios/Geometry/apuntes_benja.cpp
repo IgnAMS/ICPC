@@ -158,7 +158,7 @@ db segPoint(P &a, P &b, P &p)
 {
     if ((p - a) * (b - a) >= 0 && (p - b) * (a - b) >= 0)
         return abs(((b - a) ^ (p - a)) / (b - a).norm());
-    return min((p - a).norm(), (b - a).norm());
+    return min((p - a).norm(), (p - b).norm());
 }
 
 db segSeg(P &a, P &b, P &c, P &d)

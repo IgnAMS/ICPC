@@ -1,3 +1,12 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define repx(i,a,b) for(int i=a; i<b; i++)
+#define rep(i,n) repx(i,0,n)
+typedef long long ll;
+typedef pair<int,int> ii;
+typedef double db;
+#define ff first
+#define ss second
 
 const db PI = acos(-1.0L);
 const db EPS = 1e-12;
@@ -158,7 +167,7 @@ db segPoint(P &a, P &b, P &p)
 {
     if ((p - a) * (b - a) >= 0 && (p - b) * (a - b) >= 0)
         return abs(((b - a) ^ (p - a)) / (b - a).norm());
-    return min((p - a).norm(), (p - b).norm());
+    return min((p - a).norm(), (b - a).norm());
 }
 
 db segSeg(P &a, P &b, P &c, P &d)
@@ -191,15 +200,15 @@ bool crossesRay(P &a, P &p, P &q)
 }
 
 // if strict, returns false when a is on the boundary
-bool inPolygon(vector<P> &p, P &a, bool strict = true){
+bool inPolygon(vector<P> &p, P &a, bool strict = true)
+{
     int c = 0, n = p.size();
-    bool flag = true;
-    rep(i, n){
-        double t1 = turn(p[(i+1)%n], Points[i], m);
-        double t2 = turn(Points[(i+1)%n], Points[(i+2)%n], m);
-        if(t1*t2 > (stric? 0: EPS))) flag = false;
+    rep(i, n)
+    {
+        if (onSegment(p[i], p[(i + 1) % n], a)) return !strict;
+        c += crossesRay(a, p[i], p[(i + 1) % n]);
     }
-    return flag;
+    return c & 1;
 }
 
 db areaPolygonUnion(vector<vector<P>> &pol) // Slow O((NE)^2log(NE))
@@ -263,82 +272,24 @@ vector<P> convexHull(vector<P> &p)
     return H;
 }
 
-// MISCELLANEOUS
 
-// Smallest Enclosing cicle
-
-P bary(P &A, P &B, P &C, db a, db b, db c)
-{
-    return (A * a + B * b + C * c) / (a + b + c);
-}
-
-P circum(P &A, P &B, P &C)
-{
-    db a = (B - C).norm2(), b = (C - A).norm2(), c = (A - B).norm2();
-    return bary(A, B, C, a * (b + c - a), b * (c + a - b), c * (a + b - c));
-}
-
-pair<P, db> smallestEnclosingCircle(vector<P> &p)
-{
-    random_shuffle(all(p));
-    P c = p[0]; db r = 0; int N = p.size();
-    rep(i, N) if (i && (p[i] - c).norm() > r + EPS)
-    {
-        c = p[i]; r = 0;
-        rep(j, i) if ((p[j] - c).norm() > r + EPS)
-        {
-            c = (p[i] + p[j]) * 0.5;
-            r = (p[i] - c).norm();
-            rep(k, j) if ((p[k] - c).norm() > r + EPS)
-            {
-                c = circum(p[i], p[j], p[k]);
-                r = (p[k] - c).norm();
-            }
+int main(){
+    ios::sync_with_stdio(0); cin.tie(0);
+    int n;
+    while(cin>>n){
+        vector<P> Points(n);
+        vector<ll> X(n), Y(n);
+        rep(i, n) cin>>X[i]>>Y[i];
+        ll s = 0, b = 0;
+        rep(i, n){
+            s += X[(i+1)%n] * Y[i] - X[i] * Y[(i+1)%n];
+            b += __gcd(abs(Y[i] - Y[(i+1)%n]), abs(X[i] - X[(i+1)%n]));
         }
+        s = abs(s) / 2;
+        cout<<s - b/2 + 1<<'\n';
     }
 
-    return {c, r};
-}
 
-// Closest pair of points from array "a" (mindist: squared mindist)
 
-const int MAXN = 1000010;
-
-int n; T mindist;
-pair<P, P> best;
-P a[MAXN], t[MAXN];
-
-T sq(T x) { return x * x; }
-
-bool cmpY(P & a, P & b) { return a.y < b.y; }
-
-void update(P &p1, P &p2)
-{
-    T aux = (p1 - p2).norm2();
-    if (aux < mindist) { mindist = aux; best = {p1, p2}; }
-}
-
-// sort "a" before usage (P must have default operator<)
-void closest(int l, int r)
-{
-    if (r - l <= 3)
-    {
-        repx(i, l, r) repx(j, i + 1, r) update(a[i], a[j]);
-        sort(a + l, a + r, cmpY);
-        return;
-    }
-
-    int m = (l + r) >> 1, xm = a[m].x;
-    closest(l, m); closest(m, r);
-
-    merge(a + l, a + m, a + m, a + r, t, cmpY);
-    copy(t, t + r - l, a + l);
-
-    int tsz = 0;
-    repx(i, l, r)  if (sq(a[i].x - xm) < mindist)
-    {
-        for (int j = tsz - 1; j >= 0 && sq(a[i].y - t[j].y) < mindist; --j)
-            update(a[i], a[j]);
-        t[tsz++] = a[i];
-    }
+    return 0;
 }
