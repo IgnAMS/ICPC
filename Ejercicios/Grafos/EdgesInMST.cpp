@@ -8,6 +8,8 @@ typedef double db;
 typedef vector<int> vi;
 #define ff first
 #define ss second
+#define ep emplace_back
+#define pb push_back
 // g++ -std=c++11 A.cpp -o a && a <input.txt> output.txt
 
 map<int, map<int, int>> Weight;
@@ -63,16 +65,19 @@ struct LCA{
 };
 
 struct Edge{
-    ll u, v, w;
-    Edge(int u, int v, int w) : u(u), v(v), w(w) {}
+    ll u, v, w, ind;
+    Edge(int u, int v, int w, int ind) : u(u), v(v), w(w), ind(ind) {}
     bool operator<(const Edge &e) const { return w < e.w; }
 };
 
 
+
+
 vector<vi> T;
-struct DSU{
+vector<bool> inT;
+struct MST{
     ll weight;
-    vi p; DSU(int N, vector<Edge>& G) : p(N, -1) {
+    vi p; MST(int N, vector<Edge>& G) : p(N, -1) {
         weight = 0;
         vector<Edge> A; rep(i, G.size()) A.emplace_back(G[i]);
         sort(A.begin(), A.end());
@@ -81,12 +86,27 @@ struct DSU{
     int get(int x) { return p[x] < 0 ? x : p[x] = get(p[x]); } 
     bool sameSet(int a, int b) { return get(a) == get(b); }
     int size(int x) { return -p[get(x)]; }
-    void unite(Edge e){
+    void unite(Edge e, bool esp = false){
         int x = e.u, y = e.v, w = e.w;
         if ((x = get(x)) == (y = get(y))) return;
         weight += w; 
         T[e.u].push_back(e.v);
         T[e.v].push_back(e.u);
+        inT[e.ind] = 1;
+        if (p[x] > p[y]) swap(x,y);
+        p[x] += p[y], p[y] = x;
+    }
+};
+
+struct DSU{
+    ll weight;
+    vi p; DSU(int N) : p(N, -1) {}
+    int get(int x) { return p[x] < 0 ? x : p[x] = get(p[x]); } 
+    bool sameSet(int a, int b) { return get(a) == get(b); }
+    int size(int x) { return -p[get(x)]; }
+    void unite(Edge e, bool esp = false){
+        int x = e.u, y = e.v, w = e.w;
+        if ((x = get(x)) == (y = get(y))) return;
         if (p[x] > p[y]) swap(x,y);
         p[x] += p[y], p[y] = x;
     }
@@ -94,43 +114,42 @@ struct DSU{
 
 
 
+
+
 int main(){
     ios::sync_with_stdio(0); cin.tie(0);
     int n, m; cin>>n>>m;
     vector<Edge> E; // Edges
-    T.assign(n, vi());
+    T.assign(n, vi()); inT.assign(m, 0);
     rep(i, m){
         int u, v, w; cin>>u>>v>>w; u--, v--;
-        E.emplace_back(u, v, w);
+        E.emplace_back(u, v, w, i);
         Weight[u][v] = w, Weight[v][u] = w;
     }
-    DSU dsu = DSU(n, E);
+    MST mst = MST(n, E);
     LCA lca = LCA(T, n, 0);
-    vector<int> ans(m, 0); // 0 -> none, 1 -> any, 2 -> at least one
-    vector<vector<ii>> G(n, vector<ii>());
+    
+    DSU w_dsu = DSU(m);
+    vector<vector<int>> A;
     rep(i, m) {
-        G[E[i].u].push_back({E[i].w, i});
-        G[E[i].v].push_back({E[i].w, i});
+        vector<int> a = {int(E[i].w), int(E[i].u), int(E[i].ind)};
+        vector<int> b = {int(E[i].w), int(E[i].v), int(E[i].ind)}; 
+        A.pb(a); A.pb(b);
     }
-    // marco los any
-    rep(i, n){
-        int mini = 10000000;
-        int cont = 0; int ind = -1;
-        rep(j, G[i].size()){
-            if(G[i][j].ff < mini){
-                cont = 1, mini = G[i][j].ff;
-                ind = G[i][j].ss;
-            }
-            else if(G[i][j].ff == mini){
-                cont++;
-            }
-        }
-        if(cont == 1) ans[ind] = 1;
+    sort(A.begin(), A.end());
+    rep(i, 2 * m - 1) if(tie(A[i][0], A[i][1]) == tie(A[i + 1][0], A[i + 1][1])){
+        w_dsu.unite(Edge(A[i][2], A[i + 1][2], 0, 0));
     }
+
+    vector<bool> at_least(m, 0); 
+    rep(i, m) if(!inT[i] and lca.lca(E[i].u, E[i].v).ss == E[i].w){
+        at_least[w_dsu.get(i)] = 1;
+    }
+    
     rep(i, m){
-        if(ans[i]) cout<<"any\n";
-        else if(lca.lca(E[i].u, E[i].v).ss == E[i].w) {
-            cout<<"at least one\n";
+        if(at_least[w_dsu.get(i)]) cout<<"at least one\n";
+        else if(inT[i]){
+            cout<<"any\n";
         }
         else cout<<"none\n";
     }
