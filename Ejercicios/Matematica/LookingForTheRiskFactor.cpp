@@ -57,27 +57,23 @@ int main(){
 	}
 	
 	map<int, int> mapa;
-	rep(i, primes.size()) mapa[primes[i]] = i;
-
-	vector<vector<int>> V(primes.size(), vector<int>());
-	repx(i, 2, 100001) V[mapa[maxi[i]]].push_back(i);
+	rep(i, primes.size()) mapa[primes[i]] = i + 1;
 
 	int q; cin>>q;
 	vector<vector<int>> Q(q, {0, 0, 0});
 	rep(i, q){
 		int n, k; cin>>n>>k; Q[i] = {n, k, i};
 	}
-	return 0; 
 	sort(Q.begin(), Q.end());
 	int j = 0;
 	vi ans(q); 
 	FT fen(primes.size());
 	repx(i, 2, 100001){
-		fen.update(mapa[maxi[i]] + 1, 1); 
+		fen.update(mapa[maxi[i]], 1); 
 		while(j < q and Q[j][0] == i){
 			int p = *lower_bound(primes.begin(), primes.end(), Q[j][1]);
 			if(p != Q[j][1]) p = *prev(lower_bound(primes.begin(), primes.end(), Q[j][1]));
-			ans[Q[j][2]] = fen.query(1, mapa[p] + 1);
+			ans[Q[j][2]] = fen.query(1, mapa[p]);
 			j++;
 		}
 	}
