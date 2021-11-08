@@ -10,11 +10,11 @@ typedef vector<ll> vi;
 #define ss second
 // g++ -std=c++11 A.cpp -o a && a <input.txt> output.txt
 
-ll evaluar(vi& A, ll x){
+ll evaluar(vi& A, ll x, ll mod){
     ll mul = 1, ans = 0;
     rep(i, A.size()){
-        ans += A[i] * mul;
-        mul *= x;
+        ans = (ans + (A[i] * mul) % mod) % mod;
+        mul = (mul * x) % mod;
     }
     return ans;
 }
@@ -23,6 +23,7 @@ int main(){
     ios::sync_with_stdio(0); cin.tie(0);
     string line;
     while(getline(cin, line) and line != "="){
+        
         vector<vi> P1, P2;
         vector<char> op1, op2;
         bool sw = 0;
@@ -60,6 +61,7 @@ int main(){
             while(i < op1.size() and op1[i] == '*') {
                 vi aux_(max(aux.size(), P1[i+1].size()), 0);
                 rep(j, aux.size()) rep(k, P1[i+1].size()){
+                    if(j+k >= aux_.size()) aux_.push_back(0);
                     aux_[j+k] += aux[j] * P1[i+1][k];
                 }
                 aux = aux_;
@@ -70,13 +72,14 @@ int main(){
                 else ans1[j] += aux[j]; 
             }
         }
-
+        
         vector<ll> ans2;
         rep(i, P2.size()){
             vi aux = P2[i];
             while(i < op2.size() and op2[i] == '*') {
                 vi aux_(max(aux.size(), P2[i+1].size()), 0);
                 rep(j, aux.size()) rep(k, P2[i+1].size()){
+                    if(j+k >= aux_.size()) aux_.push_back(0);
                     aux_[j+k] += aux[j] * P2[i+1][k];
                 }
                 aux = aux_;
@@ -88,10 +91,13 @@ int main(){
             }
         }
 
-        // rep(i, ans1.size()) cout<<ans1[i]<<' '; cout<<'\n';
         vi ans(max(ans1.size(), ans2.size()), 0);
         rep(i, ans1.size()) ans[i] += ans1[i];
         rep(i, ans2.size()) ans[i] -= ans2[i];
+        // rep(i, ans1.size()) cout<<ans1[i]<<' '; cout<<'\n';
+        // rep(i, ans2.size()) cout<<ans2[i]<<' '; cout<<'\n';
+        // rep(i, ans.size()) cout<<ans[i]<<' '; cout<<'\n';
+        
 
         bool triv = 1;
         ll min_base = 2, p = 0, q = 0;
@@ -103,6 +109,7 @@ int main(){
             if(p == 0) p = abs(ans[i]);
             if(ans[i] != 0) q = abs(ans[i]);
         }
+
         if(triv) cout<<min_base<<"+\n";
         else{
             set<ll> dp = {1, p}, dq = {1, q};
@@ -112,11 +119,11 @@ int main(){
             }
             set<ll> roots;
             for(auto x: dp) for(auto y: dq){
-                if(x % y == 0 and evaluar(ans, x/y) == 0) 
+                if(x % y == 0 and evaluar(ans, x/y, 1000000007) == 0 and evaluar(ans, x/y, 1000000009) == 0 and x/y >= min_base) 
                     roots.insert(x/y);
             }
             if(roots.size() == 0) cout<<"*\n";
-            else { for(auto x: roots) cout<<x<<' '; cout<<'\n'; }
+            else for(auto x: roots) cout<<x<<" \n"[x == *roots.rbegin()];
         }
 
     }
