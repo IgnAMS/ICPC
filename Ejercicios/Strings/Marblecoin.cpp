@@ -3,7 +3,7 @@ using namespace std;
 #define repx(i,a,b) for(int i=a; i<b; i++)
 #define rep(i,n) repx(i,0,n)
 typedef long long ll;
-typedef pair<int,int> ii;
+typedef pair<ll, ll> ii;
 typedef double db;
 typedef vector<ll> vi;
 #define ff first
@@ -52,36 +52,50 @@ int main(){
     int n; cin>>n;
     vector<vector<ll>> V(n);
     rep(i, n){
-        int k; cin>>k; V[i].resize(k); rep(i, k) cin>>V[i][k];
+        int k; cin>>k; 
+        V[i].resize(k); 
+        rep(j, k) cin>>V[i][j];
     }
 
     vi super_largo;
     rep(i, n){
         rep(k, V[i].size()) super_largo.push_back(V[i][k]);
-        super_largo.push_back(0);
+        super_largo.push_back(301);
     }
     SA suffix(super_largo);
-    vi as; for(auto it = suffix.sa.rbegin(); it != suffix.sa.rend(); it++) as.push_back(*it);
-
+    // vi as; for(auto it = suffix.sa.rbegin(); it != suffix.sa.rend(); it++) as.push_back(*it);
+    // rep(i, suffix.sa.size()) cout<<suffix.sa[i]<<' '; cout<<'\n';
     
+    map<int, int> mapa; rep(i, suffix.sa.size()) mapa[suffix.sa[i]] = i;
+
     set<vi> S;
-    ll acc = 0; 
+    ll acc = 0;
     vi cont(n, 0);
     rep(i, n) {
-        S.insert({as[acc], i, 0});
+        S.insert({mapa[acc], i, 0});
         cont[i] = acc;
         acc += V[i].size() + 1;
     }
+
     vector<ii> Ans;
     while(!S.empty()){
         int x = (*S.begin())[0], i = (*S.begin())[1], j = (*S.begin())[2]; 
         Ans.push_back({i, j});
         S.erase(S.begin());
         if(j == V[i].size() - 1) continue;
-        S.insert({as[cont[i] + j + 1], i, j + 1});
+        S.insert({mapa[cont[i] + j + 1], i, j + 1});
     }
     
-    rep(i, Ans.size()) cout<<V[Ans[i].ff][Ans[i].ss]<<' ';
+    // rep(i, Ans.size()) cout<<V[Ans[i].ff][Ans[i].ss]<<' ';
+
+    ll ans = 0;
+    ll mul = 365;
+    ll MOD = 1000000007;
+    rep(i, Ans.size()){
+        ans = (ans + V[Ans[Ans.size() - i - 1].ff][Ans[Ans.size() - i - 1].ss] * mul) % MOD;
+        mul = (mul * 365) % MOD;
+    }
+    cout<<ans<<'\n';
 
 
     return 0;
