@@ -214,19 +214,10 @@ bool inPolygon(vector<P> &p, P &a, bool strict = true)
     return c & 1;
 }
 
-bool in(vector<P>& point, P &p){
-    int c = 0;
-    for (int i = point.size() - 1, j = 0; j < point.size(); i = j++)
-    {
-        double m = (point[j].x - point[i].x) / (point[j].y - point[i].y);
-        if (point[i].y <= p.y && point[j].y > p.y)
-            if (point[i].x + (p.y - point[i].y) * m >= p.x)
-                c++;
-        if (point[i].y > p.y && point[j].y <= p.y)
-            if (point[i].x + -1.0 * (point[i].y - p.y) * m >= p.x)
-                c++;
-    }
-    return c % 2;
+bool outside(ii dif, ii p0, int n, int m){
+    if(dif.ff + p0.ff >= n or dif.ss + p0.ss >= m) return 1;
+    if(dif.ff + p0.ff < 0 or dif.ss + p0.ss < 0) return 1;
+    return 0;
 }
 
 int main(){
@@ -238,22 +229,15 @@ int main(){
         mp('F', ii(1, -1)), mp('E', ii(1, 0)), mp('D', ii(1, 1)) 
     };
     while(cin>>n>>m>>k and n){
-        string a = ""; rep(i, m) a += '.';
-        vector<string> mat(n, a);
+        vector<vector<char>> mat(n, vector<char>(m, '.'));
         rep(_, k){
             char fill; ii p0; int ni; cin>>fill>>p0.ff>>p0.ss>>ni; p0.ff--, p0.ss--;
-            string com; cin>>com; 
             vector<P> Polygon;
             ii dif = ii(0, 0);
             bool pos = 1; // posible
-            vector<ii> path;
+            vector<ii> path ={ii(p0.ff, p0.ss)};
             rep(i, ni){
-                if(dif.ff + p0.ff >= n or dif.ss + p0.ss >= m) {
-                    pos = 0;
-                    cout<<"REGION "<<fill<<" GOES OUTSIDE THE ARRAY\n";
-                    break;
-                }
-                if(dif.ff + p0.ff < 0 or dif.ss + p0.ss < 0){
+                if(outside(dif, p0, n, m)) {
                     pos = 0;
                     cout<<"REGION "<<fill<<" GOES OUTSIDE THE ARRAY\n";
                     break;
@@ -265,23 +249,26 @@ int main(){
                 }
                 path.push_back(ii(dif.ff + p0.ff, dif.ss + p0.ss));
                 Polygon.push_back(P(p0.ff + dif.ff, p0.ss + dif.ss));
-                // if(i < ni) 
-                dif = ii(dif.ff + change[com[i]].ff, dif.ss + change[com[i]].ss);
+                char com; cin>>com; cerr<<com;
+                dif = ii(dif.ff + change[com].ff, dif.ss + change[com].ss);
             }
+            cerr<<"\n\n";
             if(!pos) continue;
             if(dif.ff != 0 or dif.ss != 0){
                 cout<<"REGION "<<fill<<" BOUNDARY IS NOT CLOSED\n";
                 continue;
             }
             // rep(i, Polygon.size()) cout<<Polygon[i]<<' '; cout<<'\n';
-            for(auto& u: path) mat[u.ff][u.ss] = fill;
+            for(auto& u: path) {
+                mat[u.ff][u.ss] = fill;
+            }
             rep(i, n) rep(j, m){
                 P aux = P(i, j);
-                if(inPolygon(Polygon, aux, false)) mat[i][j] = fill;
+                if(inPolygon(Polygon, aux)) mat[i][j] = fill;
             }
         }
-
-        rep(i, n) cout<<mat[i]<<'\n';
+        
+        rep(i, n) { rep(j, m) cout<<mat[i][j]; cout<<'\n'; }
         cout<<'\n';
     }
 

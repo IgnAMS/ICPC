@@ -87,7 +87,6 @@ int main(){
     }
     
     // rep(i, Ans.size()) cout<<V[Ans[i].ff][Ans[i].ss]<<' ';
-
     ll ans = 0;
     ll mul = 365;
     ll MOD = 1000000007;
