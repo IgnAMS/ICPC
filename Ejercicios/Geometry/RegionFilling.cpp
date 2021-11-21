@@ -228,15 +228,18 @@ int main(){
         mp('G', ii(0, -1)), mp('C', ii(0, 1)),
         mp('F', ii(1, -1)), mp('E', ii(1, 0)), mp('D', ii(1, 1)) 
     };
-    while(cin>>n>>m>>k and n){
+    while(cin>>n>>m>>k and n) {
         vector<vector<char>> mat(n, vector<char>(m, '.'));
+
         rep(_, k){
             char fill; ii p0; int ni; cin>>fill>>p0.ff>>p0.ss>>ni; p0.ff--, p0.ss--;
             vector<P> Polygon;
             ii dif = ii(0, 0);
             bool pos = 1; // posible
+            // cout<<fill<<'\n';
+            vector<char> Com(ni); rep(i, ni) cin>>Com[i];
             vector<ii> path ={ii(p0.ff, p0.ss)};
-            rep(i, ni){
+            rep(i, ni+1){
                 if(outside(dif, p0, n, m)) {
                     pos = 0;
                     cout<<"REGION "<<fill<<" GOES OUTSIDE THE ARRAY\n";
@@ -249,11 +252,13 @@ int main(){
                 }
                 path.push_back(ii(dif.ff + p0.ff, dif.ss + p0.ss));
                 Polygon.push_back(P(p0.ff + dif.ff, p0.ss + dif.ss));
-                char com; cin>>com; cerr<<com;
-                dif = ii(dif.ff + change[com].ff, dif.ss + change[com].ss);
+                if(i < ni){
+                    dif = ii(dif.ff + change[Com[i]].ff, dif.ss + change[Com[i]].ss);
+                }
             }
-            cerr<<"\n\n";
             if(!pos) continue;
+            cerr<<"\n\n";
+            
             if(dif.ff != 0 or dif.ss != 0){
                 cout<<"REGION "<<fill<<" BOUNDARY IS NOT CLOSED\n";
                 continue;
