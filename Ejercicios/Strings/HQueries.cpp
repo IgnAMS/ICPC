@@ -41,7 +41,7 @@ int main(){
     int n = s.length();
     Manacher(s);
     vector<vector<int>> Acc(n+1, vector<int>(n+1, 0));
-    rep(i, n) { // 2.5 * 10^7 * set.find
+    rep(i, n) {
         rep(j, n) { // que empiece en i y termine en n-j-1
             int k = n - j - 1;
             int aux = 0;
