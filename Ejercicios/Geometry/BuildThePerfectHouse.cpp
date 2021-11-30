@@ -28,8 +28,8 @@ int main(){
         else if(P[i].ff >= 0 and P[i].ss <= 0) P[i] = {-P[i].ss, P[i].ff}; // C4
         else if(P[i].ff <= 0 and P[i].ss >= 0) P[i] = {P[i].ss, -P[i].ff}; // C2
     }
-    double l = 1, r = 2*1e10;
-    rep(_, 1000){
+    double l = 0, r = 1*1e10;
+    rep(_, 100){
         double lado = (l + r) / 2; // diagonal del cuadrado
         // dentro de la circ inscrita entonces es imposible, bajar
         bool flag = 0;
@@ -45,14 +45,15 @@ int main(){
             double alpha = acos(lado / sqrt(P[i].ff * P[i].ff + P[i].ss * P[i].ss));
             a++;
             // cout<<(gamma - alpha) * 180.0 / PI<<' '<<(gamma + alpha) * 180.0 / PI<<'\n';
-            if(gamma - alpha <= 0)
-                S.insert({PI / 2.0 + gamma - alpha, 0});
-            else{
-                S.insert({gamma - alpha, 0});
-                b++;
-            }
-            if(gamma + alpha >= 0.5 * PI)
-                S.insert({gamma + alpha - 0.5 * PI, 1});
+            double x = gamma - alpha;
+            double y = gamma + alpha;
+            while(x <= 0) x += 0.5 * PI;
+            while(x >= 0.5 * PI) x -= 0.5 * PI;
+            while(y >= 0.5 * PI) y -= 0.5 * PI;
+            // cout<<x * 180.0 / PI<<" "<<y * 180.0 / PI<<'\n';
+            if(y < x) b++;
+            S.insert({x, 0});
+            S.insert({y, 1});
         }
         int cont = b;
         bool pos = 0;
@@ -67,8 +68,8 @@ int main(){
             // cout<<(next(it) == S.end())<<' '<<u.ff * 180.0 / PI<<'\n';
             // if(next(it) == S.end() and u.ff - EPS <= PI / 2.0) pos = 1;
         }
-        if(S.size() == 0) pos = 1;
-        // cout<<"el lado mide "<<lado<<" y es "<<pos<<" hacer un cuadrado\n";
+        // if(S.size() == 0) pos = 1;
+        // cout<<"el lado mide "<<lado<<" y es "<<pos<<" hacer un cuadrado\n\n";
         if(pos) l = lado;
         else r = lado;
     }
