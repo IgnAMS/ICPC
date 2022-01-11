@@ -27,7 +27,6 @@ int main(){
             while(!S.empty() and A[S.back()] >= A[n-i-1]) { R[n-i-1] = R[S.back()]; S.pop_back(); }
             S.push_back(n-i-1);
         }
-        
         ll ans = 0;
         rep(i, n) ans = max(ans, A[i] * (R[i] - L[i] + 1));
         cout<<ans<<'\n';
