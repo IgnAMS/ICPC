@@ -59,16 +59,12 @@ ll get_area(vector<ii>& P, ll mid){
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0);
-    int contador = 0;
     while(cin>>n>>m>>p and n){
         vector<ii> P(p);
         rep(i, p) cin>>P[i].ff>>P[i].ss;
-        
         ll q; cin>>q;
         while(q--){
-            contador++;
             ll x; cin>>x;
-            // if(contador == 2864 - 70) cout<<"AAAAA: "<<n<<' '<<m<<' '<<p<<'\n';
             ll l = 0, r = max(n, m);
             while(l < r){
                 ll acc = get_area(P, (l + r) / 2);
@@ -147,19 +143,16 @@ int main(){
                         if(in and lx != 10000000000 and lx <= m and lx <= rx) X2.push_back({max(1LL, lx), min(rx, m)});
                         if(!in and lx != 10000000000 and 1 <= lx and lx <= m) X2.push_back({lx, lx});
                         if(!in and rx != -10000000000 and rx <= m and lx != rx) X2.push_back({rx, rx});
-                        lx = u.ff.ff, rx = u.ff.ss;
-                        in = u.ss;
+                        lx = u.ff.ff, rx = u.ff.ss, in = u.ss;
                     }
                     else{ // u.ff.ff <= rx
                         if(!in and u.ss) {
                             if(1 <= lx and lx <= m and lx != rx) X2.push_back({lx, lx});
-                            lx = rx;
-                            in = 1;
+                            lx = rx, in = 1;
                         } 
                         else if(in and !u.ss) {
                             if(1 <= u.ff.ff and lx <= u.ff.ff) X2.push_back({max(1LL, lx), u.ff.ff});
-                            lx = u.ff.ss;
-                            in = 0;
+                            lx = u.ff.ss, in = 0;
                         }
                         else if(!in and !u.ss and rx == u.ff.ff){
                             if(1 <= lx and lx <= m) X2.push_back({lx, lx});
