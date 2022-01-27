@@ -41,7 +41,7 @@ ll get_area(vector<ii>& P, ll mid){
         lasty = E[i][0];
         ll x = E[i][0];
         int j = i;
-        while(j < E.size() and E[j][0] == x){
+        while(j < E.size() and E[j][0] == x) {
             if(E[j][1] == 0) S.insert(ii(E[j][2], E[j][3]));
             j++;
         }
