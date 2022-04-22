@@ -33,9 +33,7 @@ int main(){
         if(L[i] != -1) E.push_back({(i + L[i] + 2) / 2, 0, A[i]});
         if(R[i] != n) E.push_back({(i + R[i] + 1) / 2, 1, A[i]});
     }
-    // rep(i, n) cout<<L[i]<<' '; cout<<'\n';
     sort(E.begin(), E.end());
-    // for(auto u: E) cout<<u[0]<<' '<<u[1]<<' '<<u[2]<<'\n';
     set<ll> SS; for(auto u: S) SS.insert(u.ff);
     ll j = 0;
     rep(i, n) {

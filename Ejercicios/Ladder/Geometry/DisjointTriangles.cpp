@@ -10,7 +10,7 @@ typedef vector<ll> vi;
 #define ff first
 #define ss second
 // g++ -std=c++11 A.cpp -o a && a <input.txt> output.txt
-//  g++ -O2 D.cpp && time ./a.out < input.txt > output.txt
+// g++ -O2 D.cpp && time ./a.out < input.txt > output.txt
 
 struct P {
     ll x, y;
@@ -24,8 +24,6 @@ struct P {
 bool half(P& p) {
     return p.y > 0 or (p.y == 0 and p.x > 0);
 }
-
-
 
 
 
@@ -51,18 +49,11 @@ int main(){
     for(auto& e: S) {
         ll i = e.ss.ff, j = e.ss.ss;
         ll l = min(I[i], I[j]), r = n - max(I[i], I[j]) - 1;
-        // cout<<i + 1<<' '<<j + 1<<'\n';
-        // cout<<l<<' '<<r<<'\n';
-        // rep(i, n) cout<<I[i]<<' '; cout<<"\n\n";
         ll prev = ans;
         ans += l * (l - 1) / 2 * (r) * (r - 1) / 2;
-        // cout<<ans - prev<<"\n\n";
         swap(V[I[i]], V[I[j]]); swap(I[i], I[j]);
     }
     cout<<ans<<'\n';
-
-
-
 
 
 
