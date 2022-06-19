@@ -91,31 +91,13 @@ int main(){
         felicidad += min(sg, e) + (b / 2) * 2; 
         ll sb = b % 2, pb = b / 2;
 
-        // b != 0, por ende quedan todos los puestos de sg ocupados
-        if(b % 2 == 1) { 
-            // comb = mul(comb, choose(n - pg - sg, pb));
-            // comb = mul(comb, choose(n - pg - sg - pb, 1));
-            // comb = mul(comb, 2);
-        }
-        else { // b == 0 o b == 2 * k
-            // comb = mul(comb, choose(n - pg - sg, pb)); // b = 2 * k
-            // comb = mul(comb, choose(sg, max(0LL, sg - e))); // b = 0
-        }
-
         // Caso I
         ll disp = n - pg - sg - sb - pb; // asientos dobles disponibles
         ll unos = max(0LL, sg - e) + sb;
         ll si = 0, pi = 0;
 
-        if(i <= disp) {
-            // comb = mul(comb, choose(disp, i));
-            // comb = mul(comb, binPow(2, i));
-            felicidad += i;
-            si = i;
-        }
+        if(i <= disp) felicidad += i, si = i;
         else if(i <= disp + unos) { // hago la combinatoria de los unos, agrego los casos
-            // comb = mul(comb, choose(unos, i - disp));
-            // comb = mul(comb, binPow(2, disp));
             felicidad += disp;
             si = disp;
             if(sb) felicidad++;
@@ -125,8 +107,6 @@ int main(){
             ll d = i - unos;
             si = 2 * disp - d, pi = d - disp;
             felicidad += si;
-            // comb = mul(comb, choose(disp, si));
-            // comb = mul(comb, binPow(2, si));
         }
         fel_tot = add(fel_tot, mul(felicidad, comb));
         casos = add(casos, comb);
