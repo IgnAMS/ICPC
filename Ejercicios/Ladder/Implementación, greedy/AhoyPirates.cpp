@@ -44,7 +44,7 @@ struct STL
     {
         st[u] = node(x, i, j, st[u]);
         // cout<<"acutalizo el nodo "<<i<<' '<<j<<" a "<<st[u].v<<" al actualizarlo con "<<x<<'\n';
-                if (i == j) return;
+        if (i == j) return;
         // x, (L, R)  = (0, algo) -> 0
         // x, (L, R)  = (1, algo) -> 1
         // x, (L, R)  = (2, 0)    -> 1
