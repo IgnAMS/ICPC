@@ -36,21 +36,18 @@ int main(){
     }
     bool pos = 0;
     if(suma == 0) pos = 1;
-
-    // bool pos = (PosL[n + 1] and PosR[0]);
+    PosL[0] = (s[0] == ')'), PosR[n + 1] = (s[n - 1] == '(');
     rep(i, n) {
         suma = 0;
         repx(j, i, n) { // [i + 1, j + 1]
             if(s[j] == '(') suma++;
             else suma--;
+            if(L1[i] - suma < 0) break;
             // cout<<"i, j: "<<i<<' '<<j<<"; Pos: "<<PosL[i]<<' '<<PosR[j + 2]<<'\n';
             // cout<<"L, R: "<<L1[i]<<' '<<R0[j + 2]<<"; suma: "<<suma<<"\n\n"; 
             if(PosL[i] and PosR[j + 2] and L1[i] - suma == R0[j + 2]) {
-                if(i == 0 and j == n - 1 and s[i] == ')' and s[j] == '(') pos = 1;
-                else if(i == 0 and s[i] == ')' and j != n - 1) pos = 1;
-                else if(j == n - 1 and s[j] == '(' and i != 0) pos = 1;
-                else if(i != 0 and j != n - 1) pos = 1;
-                cout<<"i, j: "<<i<<' '<<j<<' '<<s[i]<<' '<<s[j]<<'\n';
+                pos = 1;
+                // cout<<"i, j: "<<i<<' '<<j<<' '<<s[i]<<' '<<s[j]<<'\n';
             }
         }
     }
