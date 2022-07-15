@@ -43,11 +43,8 @@ int main(){
             if(s[j] == '(') suma++;
             else suma--;
             if(L1[i] - suma < 0) break;
-            // cout<<"i, j: "<<i<<' '<<j<<"; Pos: "<<PosL[i]<<' '<<PosR[j + 2]<<'\n';
-            // cout<<"L, R: "<<L1[i]<<' '<<R0[j + 2]<<"; suma: "<<suma<<"\n\n"; 
             if(PosL[i] and PosR[j + 2] and L1[i] - suma == R0[j + 2]) {
                 pos = 1;
-                // cout<<"i, j: "<<i<<' '<<j<<' '<<s[i]<<' '<<s[j]<<'\n';
             }
         }
     }
