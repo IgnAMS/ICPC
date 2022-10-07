@@ -42,12 +42,12 @@ public:
         repx(i, 1, l + 1) {
             vector<bool> used(r + 1, false);
             vector<T> minv(r + 1, inf);
-            int j0 = 0; p[0] = i;
+            ll j0 = 0; p[0] = i;
 
             while (p[j0]) {
-                int j1, i0 = p[j0]; used[j0] = true;
+                ll j1, i0 = p[j0]; used[j0] = true;
                 T delta = inf;
-                repx(j, 1, r + 1) if (not used[j])
+                repx(j, 1, r + 1) if(not used[j])
                 {
                     T cur = cost[i0][j] - u[i0] - v[j];
                     if (cur < minv[j]) minv[j] = cur, way[j] = j0;
@@ -79,14 +79,24 @@ int main(){
     ios::sync_with_stdio(0); cin.tie(0);
     int n; cin>>n;
     ll cost[n][n]; rep(i, n) rep(j, n) cin>>cost[i][j];
-    Hungarian<ll> h(n / 2, n / 2, 0);
-    rep(i, n / 2) {
-        rep(j, n / 2) {
-            ll w = cost[2 * i][2 * j + 1] + (2 * i + 2 < n? cost[2 * i + 2][2 * j + 1]: 0LL);
-            // cout<<2 * i + 1<<' '<<2 * j + 2<<' '<<w<<'\n';
-            h.add_edge(i + 1, j + 1, w);
+    Hungarian<ll> h((n + 1) / 2, (n + 1) / 2, 0);
+    for(int i = 1, ict = 1; i <= n; i += 2, ict++) {
+        for(int j = 2, jct = 1; j <= n + (n % 2); j += 2, jct++) {
+            ll w;
+            if(j == n + 1) w = 0;
+            else w = cost[i - 1][j - 1];
+            if(j > 2) w += cost[i - 1][j - 3];
+            // cout<<i<<' '<<j<<' '<<w<<'\n';
+            h.add_edge(ict, jct, w);
         }
     }
+    // rep(i, n / 2) {
+    //     rep(j, n / 2) {
+    //         ll w = cost[2 * i][2 * j + 1] + (2 * i + 2 < n? cost[2 * i + 2][2 * j + 1]: 0LL);
+    //         cout<<2 * i + 1<<' '<<2 * j + 2<<' '<<w<<'\n';
+    //         h.add_edge(i + 1, j + 1, w);
+    //     }
+    // }
     h.calculate();
     cout<<h.answer()<<'\n';
 
