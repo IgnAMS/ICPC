@@ -10,27 +10,28 @@ typedef vector<ll> vi;
 #define ff first
 #define ss second
 // g++ -std=c++11 A.cpp -o a && a <input.txt> output.txt
+// ulimit -s 1000000
 // g++ -O2 D.cpp && time ./a.out <input.txt> output.txt
 
 
-int n;
-ll DP[101][51][51][12];
-
-int dp(int i, int even, int odd, int mul) {
-    if(i == n and mul == 0) return 1;
-    if(i == n and mul != 0) return 0;
-
-
+ll binpow(ll a, ll b, ll m) {
+    ll res = 1;
+    while(b) {
+        if(b & 1) res = (res * a) % m;
+        a = (a * a) % m;
+        b /= 2;
+    }
+    return res;
 }
-
 
 
 int main(){
     ios::sync_with_stdio(0); cin.tie(0);
-
-
-
-
+    ll b, p, m;
+    while(cin>>b) {
+        cin>>p>>m;
+        cout<<binpow(b, p, m)<<'\n';
+    }
 
 
     return 0;
