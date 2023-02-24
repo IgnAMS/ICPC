@@ -1,5 +1,6 @@
 #include "../template.cpp"
 
+// https://github.com/BenjaminRubio/CompetitiveProgramming/blob/master/Material/Structures/SegmentTreeLazy.cpp
 
 struct Node {
     int v, lzv = 0;

@@ -1,6 +1,8 @@
 #include "../template.cpp"
 
 
+// https://github.com/BenjaminRubio/CompetitiveProgramming/blob/master/Material/Structures/SegmentTree.cpp
+
 const int mxN = 5e5+5;
 
 struct Node{
@@ -9,7 +11,6 @@ struct Node{
     Node(ll v): v(v) {}
     Node(Node& a, Node& b) { v = a.v + b.v; }
 };
-
 
 // 0 - indexed, inclusive - inclusive
 template <class node> 
