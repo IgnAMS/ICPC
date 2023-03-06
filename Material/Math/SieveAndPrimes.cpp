@@ -22,10 +22,10 @@ vector<bool> segmentedSieve(ll L, ll R) {
     // generate all primes up to sqrt(R)
     ll lim = sqrt(R);
     vector<bool> mark(lim + 1, false);
-    vector<ll> primes;
+    vl primes;
     repx(i, 2, lim + 1) {
         if (!mark[i]) {
-            primes.emplace_back(i);
+            primes.pb(i);
             for (ll j = i * i; j <= lim; j += i)
                 mark[j] = 1;
         }

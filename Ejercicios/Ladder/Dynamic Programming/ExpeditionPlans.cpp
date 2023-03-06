@@ -23,6 +23,8 @@ ll cost(int i, int j) { return Acc[j] - Acc[i]; }
 int n;
 
 ll ST[2][2][mxN][mxN * 4];
+// ST[0][0]: from left to right and then right
+// ST[0][1]: from left to right and then 
 void set(int pos, ll x, ll *T, int l = 0, int r = mxN, int u = 0) {
     if(l == r) { T[u] = x; }
     else {
@@ -34,21 +36,21 @@ void set(int pos, ll x, ll *T, int l = 0, int r = mxN, int u = 0) {
 }
 
 ll query(int i, int j, ll *T, int l = 0, int r = mxN, int u = 0) {
-    if(r < i or l > j) return 1e18;
+    if(r < i or j < l) return 1e18;
     if(i <= l and r <= j) return T[u];
     ll m = (l + r) / 2;
     return min(query(i, j, T, l, m, 2 * u + 1), query(i, j, T, m + 1, r, 2 * u + 2));
 }
 
 void set0(int i, int j, ll x) {
-    set(i, x + D[i] + Acc[i], ST[0][0][j]);
-    set(i, x + D[i] - (i + 1 == j? Acc[i]: Acc[i + 1]), ST[0][1][j]); 
+    set(i, x + D[i] + (i + 1 >= j? Acc[i]: Acc[i + 1]), ST[0][0][j]); 
+    set(i, x + D[i] - (i + 1 >= j? Acc[i]: Acc[i + 1]), ST[0][1][j]); 
     DP[i][j][0] = x;
 }
 
 void set1(int i, int j, ll x) {
     set(j, x + D[j] + Acc[i], ST[1][0][i]);
-    set(j, x + D[j] - (i + 1 == j? Acc[j - 1]: Acc[j + 1]), ST[1][1][i]); 
+    set(j, x + D[j] - Acc[i], ST[1][1][i]); 
     DP[i][j][1] = x;
 }
 
@@ -64,38 +66,25 @@ int main(){
     D[n] = 0;
     rep(i, n + 1) rep(j, n + 1) rep(u, 2) DP[i][j][u] = -1; 
     for (int i = 0; i <= n; i++) {
-        // opt[i][i] = i;
-        // Initialize dp[i][i] according to the problem
         set0(i, i, F[i]);
         set1(i, i, F[i]);
     }
-    cout<<query(3, 3, ST[1][0][3])<<'\n';
     repx(d, 1, n + 1) rep(i, n + 1 - d) {
         int j = i + d;
         int l = i, r = j - 1;
         while(l < r) {
             int m = (l + r) / 2;
-            if(DP[i][m][0] > DP[m + 1][j][1]) r = m;
+            if(DP[i][m][1] > DP[m + 1][j][0]) r = m;
             else l = m + 1;
         }
+        // DP[i][m][1] > DP[m + 1][j][0]
         cout<<i<<' '<<j<<' '<<l<<'\n';
         cout<<query(i, l, ST[0][0][j])<<' '<<query(l + 1, j, ST[1][0][i])<<'\n';
-        cout<<query(i, l, ST[0][0][j]) - Acc[i]<<' '<<query(l + 1, j, ST[1][0][i]) - Acc[i]<<"\n";
-        cout<<query(i, l, ST[0][1][j]) + Acc[j]<<' '<<query(l + 1, j, ST[1][1][i]) + Acc[j]<<"\n\n";
+        cout<<query(i, l, ST[0][0][j]) - Acc[i]<<' '<<query(l, j, ST[1][0][i]) - Acc[i]<<"\n";
+        cout<<query(i, l, ST[0][1][j]) + Acc[j]<<' '<<query(l, j, ST[1][1][i]) + Acc[j]<<"\n\n";
         
-        set0(i, j, min(query(i, l, ST[0][0][j]), query(l + 1, j, ST[1][0][i])) - Acc[i]);
-        set1(i, j, min(query(i, l, ST[0][1][j]), query(l + 1, j, ST[1][1][i])) + Acc[j]);
-        // for(int u = 0; u < 2; u++){ 
-        //     ll mn = 1e18;
-        //     for (int k = i; k <= j - 1; k++) {
-        //         ll costo = (u == 0 ? cost(i, k): cost(k, j)) + D[k] + max(DP[i][k][1], DP[k + 1][j][0] + (k + 1 != j) * cost(k, k + 1)); 
-        //         if (mn >= costo) {
-        //             // opt[i][j] = k;   
-        //             mn = costo;
-        //         }
-        //     }
-        //     DP[i][j][u] = mn; 
-        // }
+        set0(i, j, min(query(i, l, ST[0][0][j]), query(l, j - 1, ST[1][0][i])) - Acc[i]);
+        set1(i, j, min(query(i, l, ST[0][1][j]), query(l, j - 1, ST[1][1][i])) + Acc[j]);
     }
     cout<<DP[0][n][0]<<'\n';
     // cout<<dp(0, n, 0)<<'\n';
