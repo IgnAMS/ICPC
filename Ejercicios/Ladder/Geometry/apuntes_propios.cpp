@@ -4,15 +4,16 @@ const db EPS = 1e-12;
 
 // POINT 2D
 
-typedef db T; struct P
-{
+typedef db T; 
+struct P {
     T x, y;
-    P() {} P(T x, T y) : x(x), y(y) {}
+    P(): x(0), y(0) {} 
+    P(T x, T y) : x(x), y(y) {}
 
     P operator+(const P &p) const { return P(x + p.x, y + p.y); }
     P operator-(const P &p) const { return P(x - p.x, y - p.y); }
-    P operator*(const db &c) const { return P(x * c, y * c); }
-    P operator/(const db &c) const { return P(x / c, y / c); }
+    P operator*(const T &c) const { return P(x * c, y * c); }
+    P operator/(const T &c) const { return P(x / c, y / c); }
     T operator^(const P &p) const { return x * p.y - y * p.x; }
     T operator*(const P &p) const { return x * p.x + y * p.y; }
     bool operator==(const P &p) const
@@ -26,8 +27,7 @@ typedef db T; struct P
 
     T norm2() const { return x * x + y * y; }
     db norm() const { return sqrt(norm2()); }
-    db ang()
-    {
+    db ang() {
         db a = atan2(y, x);
         if (a < 0) a += 2. * PI;
         return a;
@@ -39,8 +39,7 @@ typedef db T; struct P
 };
 P polar(db r, db a) { return P(r * cos(a), r * sin(a)); }
 istream &operator>>(istream &s, P &p) { return s >> p.x >> p.y; }
-ostream &operator<<(ostream &s, const P &p)
-{
+ostream &operator<<(ostream &s, const P &p) {
     return s << '(' << p.x << ", " << p.y << ')';
 }
 
@@ -79,9 +78,7 @@ void polarSort(vector<P> &v)
 }
 
 // LINE
-
-struct L
-{
+struct L {
     P v; T c;
     L() {} L(P v, T c) : v(v), c(c) {}
     L(T a, T b, T c) : v(P(b, -a)), c(c) {}
@@ -96,13 +93,12 @@ struct L
     P refl(P p) { return p - v.perp() * 2 * side(p) / v.norm2(); }
 };
 
-bool parallel(L l1, L l2) {return abs(l1.v ^ l2.v) < EPS; }
+bool parallel(L l1, L l2) { return abs(l1.v ^ l2.v) < EPS; }
 
 // only if not parallel
 P inter(L l1, L l2) { return (l2.v * l1.c - l1.v * l2.c) / (l1.v ^ l2.v); }
 
-L bisector(L l1, L l2, bool in)
-{
+L bisector(L l1, L l2, bool in) {
     db sign = in ? 1 : -1;
     return L(l2.v / l2.v.norm() + l1.v / l1.v.norm() * sign,
              l2.c / l2.v.norm() + l1.c / l1.v.norm() * sign);
@@ -171,22 +167,20 @@ db segSeg(P &a, P &b, P &c, P &d)
 
 // POLYGONS
 
-db areaTriangle(P &a, P &b, P &c)
-{
+db areaTriangle(P &a, P &b, P &c) {
     return abs((b - a) ^ (c - a)) / 2.;
 }
 
-db areaPolygon(vector<P> &p)
-{
-    db ans = 0; int n = p.size();
+db areaPolygon(vector<P> &p) {
+    db ans = 0; 
+    int n = p.size();
     rep(i, n) ans += p[i] ^ p[(i + 1) % n];
     return abs(ans) / 2.;
 }
 
 bool above(P &a, P &p) { return p.y >= a.y; }
 
-bool crossesRay(P &a, P &p, P &q)
-{
+bool crossesRay(P &a, P &p, P &q) {
     return (above(a, q) - above(a, p)) * turn(a, p, q) > 0;
 }
 
@@ -195,9 +189,9 @@ bool inPolygon(vector<P> &p, P &a, bool strict = true){
     int c = 0, n = p.size();
     bool flag = true;
     rep(i, n){
-        double t1 = turn(p[(i+1)%n], Points[i], m);
-        double t2 = turn(Points[(i+1)%n], Points[(i+2)%n], m);
-        if(t1*t2 > (stric? 0: EPS))) flag = false;
+        db t1 = turn(p[(i+1)%n], Points[i], m);
+        db t2 = turn(Points[(i+1)%n], Points[(i+2)%n], m);
+        if(t1 * t2 > (stric? 0: EPS)) flag = false;
     }
     return flag;
 }
@@ -319,10 +313,8 @@ void update(P &p1, P &p2)
 }
 
 // sort "a" before usage (P must have default operator<)
-void closest(int l, int r)
-{
-    if (r - l <= 3)
-    {
+void closest(int l, int r) {
+    if (r - l <= 3) {
         repx(i, l, r) repx(j, i + 1, r) update(a[i], a[j]);
         sort(a + l, a + r, cmpY);
         return;

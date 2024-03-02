@@ -26,9 +26,10 @@ int main(){
     int i = 0;
     multiset<int> S;
     while(i < E.size()){
-        prev = t; t = E[i][0];
+        prev = t; 
+        t = E[i][0];
         int h_max = (S.size()? *S.rbegin(): 0);
-        while(i < E.size() and E[i][0] == t){
+        while(i < E.size() and E[i][0] == t) {
             if(E[i][1]) S.erase(S.find(E[i][2]));
             else S.insert(E[i][2]);
             i++;
