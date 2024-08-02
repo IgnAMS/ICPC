@@ -1,69 +1,95 @@
+#pragma GCC optimize("Ofast")
 #include<bits/stdc++.h>
 using namespace std;
 #define repx(i,a,b) for(int i=a; i<b; i++)
 #define rep(i,n) repx(i,0,n)
 typedef long long ll;
-typedef pair<int,int> ii;
+typedef pair<ll, ll> pll;
 typedef double db;
-typedef vector<ll> vi;
+typedef vector<ll> vl;
 #define ff first
 #define ss second
+#define pb push_back
 // g++ -std=c++11 A.cpp -o a && a <input.txt> output.txt
-//  g++ -O2 D.cpp && time ./a.out < input.txt > output.txt
+// ulimit -s 1000000
+// g++ -O2 D.cpp && time ./a.out <input.txt> output.txt
 
-struct SA
-{
-    int n; vi C, R, R_, sa, sa_, lcp;
-    inline int gr(int i) { return i < n ? R[i] : 0; }
-    void csort(int maxv, int k)
-    {
-        C.assign(maxv + 1, 0); rep(i, n) C[gr(i + k)]++;
-        repx(i, 1, maxv + 1) C[i] += C[i - 1];
-        for (int i = (int)n - 1; i >= 0; i--) sa_[--C[gr(sa[i] + k)]] = sa[i];
-        sa.swap(sa_);
+struct SA {
+    int sz, l, n;
+    vl L, Lk, S, C, T, F, Count, Count2;
+    vector<vl> N, Ilk;
+
+    SA(string s, int n) : n(n), L(2 * n), Lk(2 * n), C(2 * n), F(2 * n), Count(2 * n, 0), Count2(2 * n, -1), S(2 * n, -1), N(2 * n, vl(26, -1)) {
+        l = L[0] = 0, Lk[0] = -1, sz = 1; 
+        int p;
+        for(char c : s) p = extend(c - 'a');
+        Ilk.resize(sz); S.assign(sz, -1);
+        rep(i, sz) if(i) Ilk[Lk[i]].pb(i);
+
+        T.assign(sz, 0); 
+        while(p != -1) T[p] = 1, p = Lk[p];
     }
-    void getSA(vi& s)
-    {
-        R = R_ = sa = sa_ = vi(n); rep(i, n) sa[i] = i;
-        sort(all(sa), [&s](int i, int j) { return s[i] < s[j]; });
-        int r = R[sa[0]] = 1;
-        repx(i, 1, n) R[sa[i]] = (s[sa[i]] != s[sa[i - 1]]) ? ++r : r;
-        for (int h = 1; h < n && r < n; h <<= 1)
-        {
-            csort(r, h); csort(r, 0); r = R_[sa[0]] = 1;
-            repx(i, 1, n)
-            {
-                if (R[sa[i]] != R[sa[i - 1]] || gr(sa[i] + h) != gr(sa[i - 1] + h)) r++;
-                R_[sa[i]] = r;
-            } R.swap(R_);
+    int extend(int c) {
+        int cur = sz++, p = l; 
+        C[cur] = 0, L[cur] = L[l] + 1, F[cur] = L[cur] - 1;
+        while(p != -1 && N[p][c] == -1) N[p][c] = cur, p = Lk[p];
+        if(p == -1) { 
+            Lk[cur] = 0, l = cur;
+            return cur;
         }
+        int q = N[p][c];
+        if(L[p] + 1 == L[q]) { Lk[cur] = q, l = cur; return cur; }
+        int w = sz++; 
+        C[w] = 1, L[w] = L[p] + 1, Lk[w] = Lk[q], N[w] = N[q];
+        F[w] = F[q];
+        while (p != -1 && N[p][c] == q) N[p][c] = w, p = Lk[p];
+        Lk[q] = Lk[cur] = w, l = cur; return cur;
     }
-    void getLCP(vi &s)
-    {
-        lcp.assign(n, 0); int k = 0;
-        rep(i, n)
-        {
-            int r = R[i] - 1;
-            if (r == n - 1) { k = 0; continue; }
-            int j = sa[r + 1];
-            while (i + k < n && j + k < n and s[i + k] == s[j + k]) k++;
-            lcp[r] = k; if (k) k--;
+
+    int find(string& s) {
+        int p = 0;
+        for(auto u: s) {
+            int x = u - 'a';
+            if(N[p][x] == -1) return -1;
+            p = N[p][x];
         }
+        return p;
     }
-    SA(vi &s) { n = s.size(); getSA(s); getLCP(s); }
+
+    ll size(int u) {
+        if(u == -1) return 0;
+        if(S[u] != -1) return S[u];
+        // Occurrance at F[u] - large + 1 if it is not a clone
+        S[u] = !C[u]; 
+        for(int v: Ilk[u]) S[u] += size(v);
+        return S[u];
+    }
+
+    ll size(string& s) { return size(find(s)); }
 };
 
-int main(){
+int main() {
     ios::sync_with_stdio(0); cin.tie(0);
-    string s1, s2; cin>>s1>>s2;
-    vi a1; rep(i, s1.length()) a1.push_back(s1[i] - 'a');
-    vi a2; rep(i, s2.length()) a2.push_back(s2[i] - 'a');
-    SA S1(a1), S2(a2);
+    string s1, s2;
+    cin>>s1>>s2;
+    int n1 = s1.length(), n2 = s2.length();
+    SA sa1(s1, n1), sa2(s2, n2);
     
-    rep(i, s1.length()){
-        
-    }
+    int ans = 1e4;
+    rep(i, n1) {
+        int u1 = 0, u2 = 0;
+        repx(j, i, n1) {
+            if(sa1.N[u1][s1[j] - 'a'] != -1) u1 = sa1.N[u1][s1[j] - 'a'];
+            else break;
+            if(sa2.N[u2][s1[j] - 'a'] != -1) u2 = sa2.N[u2][s1[j] - 'a'];
+            else break;
 
+            int largo = j - i + 1;
+            if(sa1.size(u1) == 1 and sa2.size(u2) == 1) ans = min(ans, largo);
+        }
+    }
+    if(ans == 1e4) cout<<"-1\n";
+    else cout<<ans<<'\n';
 
     return 0;
 }
