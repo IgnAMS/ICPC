@@ -245,14 +245,27 @@ vector<P> convexHull(vector<P> &p) {
 // Check if point is inside a convex polygon
 void normalize(vector<P>& p) { // Normalize respect to the leftmost point
     int n = p.size();
+    // anti clockwise
     if(turn(p[0], p[1], p[2]) > 0) reverse(p.begin(), p.end());
+    vector<P> p2;
+    // take out collinear points
+    rep(i, n) {
+        if(p2.empty()) p2.pb(p[i]);
+        else if(((p2.back() - p[i]) * (p[(i+1)%n] - p[i])) < 0 and turn(p2.back(), p[i], p[(i+1)%n]) == 0) {
+            continue;
+        }
+        else p2.pb(p[i]);
+    }
+    swap(p2, p);
+
     int pi = min_element(p.begin(), p.end()) - p.begin();
+    rotate(p.begin(), p.begin() + pi, p.end());
     vector<P> s(n);
     rep(i, n) s[i] = p[(pi + i) % n];
     p.swap(s);
 }
 
-bool inConvexPol(vector<P>& p, P& q) { // first get rid of the collinear points
+bool inConvexPol(vector<P>& p, P& q, bool strict=false) { // first get rid of the collinear points
     if(turn(p[0], p[1], q) > 0 or turn(p.back(), p[0], q) > 0) return 0;
     int l = 1, r = p.size() - 2;
     while(l < r) {
@@ -260,9 +273,13 @@ bool inConvexPol(vector<P>& p, P& q) { // first get rid of the collinear points
         if(turn(p[0], p[m], q) <= 0) l = m;
         else r = m - 1;
     }
+    if(strict) {
+        if(inDisk(q, p[l], p[l + 1]) and turn(p[l], q, p[l + 1]) == 0) return 0;
+        if(l == 1 and inDisk(q, p[0], p[l]) and turn(p[0], q, p[l]) == 0) return 0;
+        if(l == p.size() - 2 and inDisk(q, p[l + 1], p[0]) and turn(p[0], q, p[l + 1]) == 0) return 0;
+    }
     return turn(p[l], p[l + 1], q) <= 0;
 }
-
 
 
 
