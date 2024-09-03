@@ -18,9 +18,29 @@ int main(){
     ios::sync_with_stdio(0); cin.tie(0);
 
 
+    int t; cin>>t;
+    while(t--) {
+        int n; cin>>n;
+        vl X(n);
+        rep(i, n) cin>>X[i];
 
+        sort(X.begin(), X.end());
+        int mex = X.size();
+        rep(i, (int)X.size() - 1) {
+            if(X[i] + 1 < X[i + 1]) {
+                mex = X[i] + 1;
+                break;
+            }
+            if(X[i] == X[i + 1]) mex--;
+        }
+        if(X[0] != 0) mex = 0;
+        cout<<mex<<'\n';
+    }
 
-
+    
 
     return 0;
 }
+
+
+

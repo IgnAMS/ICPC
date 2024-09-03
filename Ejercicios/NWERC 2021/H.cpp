@@ -89,6 +89,4 @@ int main() {
         mx = max(D[i + 1], mx);    
     } 
     cout<<mx<<'\n';
-    
-
 }
