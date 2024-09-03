@@ -252,15 +252,15 @@ void normalize(vector<P>& p) { // Normalize respect to the leftmost point
     p.swap(s);
 }
 
-bool inConvexPol(vector<P>& p, P& q) {
+bool inConvexPol(vector<P>& p, P& q) { // first get rid of the collinear points
     if(turn(p[0], p[1], q) > 0 or turn(p.back(), p[0], q) > 0) return 0;
-    int l = 1, r = p.size() - 1;
-    while(b - a > 1) {
+    int l = 1, r = p.size() - 2;
+    while(l < r) {
         ll m = (l + r + 1) / 2;
-        if(turn(p[0], p[c], q) > 0) l = m;
+        if(turn(p[0], p[m], q) <= 0) l = m;
         else r = m - 1;
     }
-    return turn(p[l], p[l + 1], q) >= 0;
+    return turn(p[l], p[l + 1], q) <= 0;
 }
 
 
