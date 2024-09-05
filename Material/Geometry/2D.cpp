@@ -243,49 +243,26 @@ vector<P> convexHull(vector<P> &p) {
 }
 
 // Check if point is inside a convex polygon
-void normalize(vector<P>& p) { // Normalize respect to the leftmost point
-    int n = p.size();
-    vector<P> p2;
-    // take out collinear points
-    rep(i, n) {
-        if(p2.empty()) p2.pb(p[i]);
-        else if(((p2.back() - p[i]) * (p[(i+1)%n] - p[i])) < 0 and turn(p2.back(), p[i], p[(i+1)%n]) == 0) {
-            continue;
-        }
-        else p2.pb(p[i]);
-    }
-    swap(p2, p);
-    // anti clockwise
-    if(turn(p[0], p[1], p[2]) > 0) reverse(p.begin(), p.end());
-    int pi = min_element(p.begin(), p.end()) - p.begin();
-    rotate(p.begin(), p.begin() + pi, p.end());
-    p.swap(s);
-}
-
-bool inConvexPol(vector<P>& p, P& q, bool strict=false) { 
+// + if inside, 0 in border, - outside
+T inConvexPol(vector<P>& p, P& q) { 
     // first get rid of the collinear points
-    if(turn(p[0], p[1], q) > 0 or turn(p.back(), p[0], q) > 0) return 0;
-    int l = 1, r = p.size() - 2;
-    while(l < r) {
-        ll m = (l + r + 1) / 2;
-        if(turn(p[0], p[m], q) <= 0) l = m;
+    int l = 1, r = p.size() - 2; assert(p.size() >= 3);
+    while(l < r) { // collinear points are unsupported!
+        int m = (l + r + 1) / 2;
+        if(turn(p[0], p[m], q) >= 0) l = m;
         else r = m - 1;
     }
-    if(strict) {
-        if(inDisk(q, p[l], p[l + 1]) and turn(p[l], q, p[l + 1]) == 0) return 0;
-        if(l == 1 and inDisk(q, p[0], p[l]) and turn(p[0], q, p[l]) == 0) return 0;
-        if(l == p.size() - 2 and inDisk(q, p[l + 1], p[0]) and turn(p[0], q, p[l + 1]) == 0) return 0;
-    }
-    return turn(p[l], p[l + 1], q) <= 0;
+    T in = min(turn(p[0], p[1], q), turn(p.back(), p[0], q));
+    return min(in, turn(p[l], p[l + 1], q));
 }
 
 void reorder_polygon(vector<P>& p) {
     int pi = 0;
     repx(i, 1, (int)p.size()) {
-        if(p[i].y < p[pi] or (p[i].y == p[pi].y and p[i].x < p[pi].x)) 
+        if(p[i].y < p[pi].y or (p[i].y == p[pi].y and p[i].x < p[pi].x)) 
             pi = i;
     }
-    reverse(p.begin(), p.end(), pi);
+    rotate(p.begin(), p.begin() + pi, p.end());
 }
 
 vector<P> minkowski(vector<P> ps, vector<P> qs) {
