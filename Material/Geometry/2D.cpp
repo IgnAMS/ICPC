@@ -234,7 +234,7 @@ vector<P> convexHull(vector<P> &p) {
         while(k >= 2 && turn(H[k - 2], H[k - 1], p[i]) <= 0) k--;
         H[k++] = p[i];
     }
-    for (int i = n - 2, t = k + 1; i >= 0; i--) {
+    for(int i = n - 2, t = k + 1; i >= 0; i--) {
         while(k >= t && turn(H[k - 2], H[k - 1], p[i]) <= 0) k--;
         H[k++] = p[i];
     }
@@ -245,8 +245,6 @@ vector<P> convexHull(vector<P> &p) {
 // Check if point is inside a convex polygon
 void normalize(vector<P>& p) { // Normalize respect to the leftmost point
     int n = p.size();
-    // anti clockwise
-    if(turn(p[0], p[1], p[2]) > 0) reverse(p.begin(), p.end());
     vector<P> p2;
     // take out collinear points
     rep(i, n) {
@@ -257,15 +255,15 @@ void normalize(vector<P>& p) { // Normalize respect to the leftmost point
         else p2.pb(p[i]);
     }
     swap(p2, p);
-
+    // anti clockwise
+    if(turn(p[0], p[1], p[2]) > 0) reverse(p.begin(), p.end());
     int pi = min_element(p.begin(), p.end()) - p.begin();
     rotate(p.begin(), p.begin() + pi, p.end());
-    vector<P> s(n);
-    rep(i, n) s[i] = p[(pi + i) % n];
     p.swap(s);
 }
 
-bool inConvexPol(vector<P>& p, P& q, bool strict=false) { // first get rid of the collinear points
+bool inConvexPol(vector<P>& p, P& q, bool strict=false) { 
+    // first get rid of the collinear points
     if(turn(p[0], p[1], q) > 0 or turn(p.back(), p[0], q) > 0) return 0;
     int l = 1, r = p.size() - 2;
     while(l < r) {
@@ -280,6 +278,32 @@ bool inConvexPol(vector<P>& p, P& q, bool strict=false) { // first get rid of th
     }
     return turn(p[l], p[l + 1], q) <= 0;
 }
+
+void reorder_polygon(vector<P>& p) {
+    int pi = 0;
+    repx(i, 1, (int)p.size()) {
+        if(p[i].y < p[pi] or (p[i].y == p[pi].y and p[i].x < p[pi].x)) 
+            pi = i;
+    }
+    reverse(p.begin(), p.end(), pi);
+}
+
+vector<P> minkowski(vector<P> ps, vector<P> qs) {
+    reorder_polygon(ps), reorder_polygon(qs);
+    ps.pb(ps[0]); ps.pb(ps[1]);
+    qs.pb(qs[0]); qs.pb(qs[1]);
+    vector<P> res; int i = 0, j = 0;
+    while(i < ps.size() - 2 or j < qs.size() - 2) {
+        res.pb(ps[i] + qs[j]);
+        auto z = (ps[i + 1] - ps[i]) ^ (qs[j + 1] - qs[j]);
+        if(z >= 0 and i < ps.size() - 2) ++i;
+        if(z <= 0 and j < qs.size() - 2) ++j;
+    }
+    return res;
+}
+
+
+
 
 
 
