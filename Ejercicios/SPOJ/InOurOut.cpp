@@ -65,10 +65,10 @@ T turn(P &a, P &b, P &c) { return (b - a) ^ (c - a); }
 void normalize(vector<P>& p) { // Normalize respect to the leftmost point
     int n = p.size();
     if(turn(p[0], p[1], p[2]) > 0) reverse(p.begin(), p.end());
-    int pi = min_element(p.begin(), p.end()) - p.begin();
-    vector<P> s(n);
-    rep(i, n) s[i] = p[(pi + i) % n];
-    p.swap(s);
+    // int pi = min_element(p.begin(), p.end()) - p.begin();
+    // vector<P> s(n);
+    // rep(i, n) s[i] = p[(pi + i) % n];
+    // p.swap(s);
 }
 
 bool inConvexPol(vector<P>& p, P& q) {

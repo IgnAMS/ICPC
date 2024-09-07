@@ -53,15 +53,15 @@ bool left(P& a, P& b, P& p) { return (b - a) ^ (p - a) > 0; }
 
 
 bool isConvex(vector<P> p) {
-    int n = sz(p);
+    int n = p.size();
     bool hasPos = false, hasNeg = false, hasCol = false;
     rep(i, n) {
-        int o = turn(p[i], p[(i + 1) % n], p[(i + 2) % n]);
-        if (o > 0) hasPos = true;
-        if (o < 0) hasNeg = true;
-        if (o == 0) hasCol = true;
+        T o = turn(p[i], p[(i + 1) % n], p[(i + 2) % n]);
+        if(abs(o) < EPS) hasCol = true;
+        else if(o > 0) hasPos = true;
+        else if(o < 0) hasNeg = true;
     }
-    return !(hasPos && hasNeg) && !hasCol;
+    return !(hasPos && hasNeg);
 }
 
 bool half(P &p) { return p.y > 0 || (p.y == 0 && p.x > 0); }
@@ -135,12 +135,12 @@ bool properInter(P &a, P &b, P &c, P &d, P &out) {
 
 set<P> inter(P &a, P &b, P &c, P &d) {
     P out;
-    if (properInter(a, b, c, d, out)) return {out};
+    if(properInter(a, b, c, d, out)) return {out};
     set<P> ans;
-    if (onSegment(c, d, a)) ans.insert(a);
-    if (onSegment(c, d, b)) ans.insert(b);
-    if (onSegment(a, b, c)) ans.insert(c);
-    if (onSegment(a, b, d)) ans.insert(d);
+    if(onSegment(c, d, a)) ans.insert(a);
+    if(onSegment(c, d, b)) ans.insert(b);
+    if(onSegment(a, b, c)) ans.insert(c);
+    if(onSegment(a, b, d)) ans.insert(d);
     return ans;
 }
 

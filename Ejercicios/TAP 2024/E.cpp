@@ -7,48 +7,44 @@ typedef double db;
 #define repx(i, a, b) for(int i = a; i < b; i++)
 #define rep(i, n) repx(i, 0, n)
 #define pb push_back
-#define ar array
+#define ff first
+#define ss second
 
+const int mxN = 1e5+10;
+pair<ll, bitset<200>> DP[mxN];
 
-const int mxN = 1e5+5;
-ll dp[mxN][205];
-
-void solve(){
-    for(int life = 0; life < mxN; ++life){
-        for(int i = 0; i< 205; ++i){
-            dp[life][i] = 0;
-        }
-    }
-    ll n, P;
-    cin >> n >> P;
-    vector<ar<ll, 3>> a(n);
-    rep(i, n){
-        cin >> a[i][0] >> a[i][1] >> a[i][2];
-    }
-    for(int life = 1; life <= P; ++life){
-        for(int i = 0; i<n; ++i){
-            dp[life][i] = max(dp[life][i], dp[life][i-1]);
-            ll actual = (life-a[i][1])/a[i][0];
-            if(actual >= 0){
-                dp[life][i] = max(dp[life][i], dp[actual][i-1] + a[i][2]);
-            }
-        }
-    }
-    ll ans = 0;
-    for(int life = 0; life<=P; ++life){
-        for(int i = 0; i<n; ++i){
-            ans = max(ans, dp[life][i]);
-        }
-    }
-    cout << ans << "\n";
-}
+int n; 
+ll P;
+ll A[mxN], B[mxN], C[mxN];
 
 int main() {
     ios::sync_with_stdio(0); cin.tie(0);
+    cin>>n>>P;
+    rep(i, n) cin>>A[i]>>B[i]>>C[i];
+    vector<array<ll, 3>> X;
+    rep(i, n) X.pb({A[i], B[i], C[i]});
+    sort(X.begin(), X.end(), [&](const array<ll, 3>& a, const array<ll, 3>& b) {
+        if(a[1] * (1 - b[0]) == b[1] * (1 - a[0])) return a[1] < b[1];
+        return ll(a[1]) * (1LL - b[0]) < ll(b[1]) * (1LL - a[0]); 
+    });
+    reverse(X.begin(), X.end());
 
-    solve();
-
+    rep(i, n) {
+        A[i] = X[i][0], B[i] = X[i][1], C[i] = X[i][2];
+    }
     
+    ll DP[P + 1];
+    rep(i, P + 1) DP[i] = -1e15;
+
+    DP[0] = 0;
+    ll ans = 0;
+    for(auto [a, b, c]: X) {
+        for(ll x = P; x >= 0; x--) if(x - b >= 0) {
+            DP[x] = max(DP[x], DP[(x - b) / a] + c);
+            ans = max(ans, DP[x]);
+        }
+    }
+    cout<<ans<<'\n';
 
     return 0;
 }
