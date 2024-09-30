@@ -53,6 +53,7 @@ int main() {
         if(X.size() <= k) r = m;
         else l = m + 1;
     }
+    X.clear();
     dfs(l, 0, -1);
     cout<<X.size()<<'\n';
     for(auto [a, b]: X) cout<<a + 1<<' '<<b + 1<<'\n';
