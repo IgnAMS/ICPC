@@ -12,87 +12,61 @@ typedef vector<ll> vl;
 #define pb push_back
 // g++ -std=c++11 A.cpp -o a && a <input.txt> output.txt
 // ulimit -s 1000000
-// g++ -O2 D.cpp && time ./a.out <input.txt> output.txt
+// g++ -O2 C.cpp && time ./a.out <input.txt> output.txt
 
-int n; 
-string s;
+const ll MOD = 998244353;
 
+struct Node {    // (*) = Optional
+    int len;     // length of substring
+    int to[10];  // insertion edge for all characters a-z
+    int link;    // maximun palindromic suffix
+    int i;       // (*) start index of current Node
+    int cnt;     // (*) # of occurrences of this substring
+    Node(int len, int link=0, int i=0, int cnt=0): len(len),
+    link(link), i(i), cnt(cnt) {memset(to, 0, sizeof(to));}
+};
 
-struct RH {
-    int binpow(int a, int b, int MOD) {
-        int res = 1;
-        while(b) {
-            if(b & 1) res = (1LL * res * a) % MOD;
-            a = (1LL * a * a) % MOD;
-            b >>= 1;
-        }
-        return res;
-    } 
-    const int B = 119, M[2] = {999727999, 1070777777}, P[2] = {325255434, 10018302};
-    vector<int> H[2], I[2];
-    RH(string &s) {
-        int N = s.size();
-        rep(k, 2) {
-            H[k].resize(N + 1), I[k].resize(N + 1);
-            H[k][0] = 0; ll b = 1;
-            rep(i, N) {
-                H[k][i + 1] = (H[k][i] + b * (s[i] - 'a' + 1)) % M[k];
-                b = (b * B) % M[k];
-            }
-            I[k][N] = binpow(b, M[k - 2], M[k]);
-            for(int i = N - 1; i >= 0; i--) I[k][i] = (1LL * I[k][i + 1] * B) % M[k];
-        }
+struct EerTree {    // Palindromic Tree
+    vector<Node> t; // tree (max size of tree is n+2)
+    int last;       // current node
+    EerTree(string &s) : last(0) {
+        t.emplace_back(-1); t.emplace_back(0); // root 1 & 2
+        rep(i, s.size()) add(i, s);  // construct tree
+        for(int i = t.size() - 1; i > 1; i--) 
+            t[t[i].link].cnt += t[i].cnt;
     }
-
-    ll get(int l, int r) {
-        ll h0 = (H[0][r] - H[0][l] + M[0]) % M[0];
-        h0 = (1LL * h0 * I[0][l]) % M[0];
-        ll h1 = (H[1][r] - H[1][l] + M[1]) % M[1];
-        h1 = (1LL * h1 * I[1][l]) % M[1];
-        return (h0<<32) | h1;
+    void add(int i, string &s){         // vangrind warning:
+        int p=last, c= s[i]-'0';         // i-t[p].len-1 = -1
+        while(s[i-t[p].len-1] != s[i]) p = t[p].link;
+        if(t[p].to[c]){ last = t[p].to[c]; if(i >= s.size()/2) t[last].cnt++; }
+        else{
+            int q = t[p].link;
+            while(s[i-t[q].len-1] != s[i]) q = t[q].link;
+            q = max(1, t[q].to[c]);
+            last = t[p].to[c] = t.size();
+            if(i >= s.size() / 2) t.emplace_back(t[p].len + 2, q, i-t[p].len-1, 1);
+            else t.emplace_back(t[p].len + 2, q, i-t[p].len-1, 0);
+        }
     }
 };
 
-
-
-void manacher() {
-    vl d1(n);
-    cout<<"impar:\n";
-    for(int i = 0, l = 0, r = -1; i < n; i++) {
-        int k = (i > r) ? 1: min(d1[l + r - i], r - i + 1LL);
-        cout<<((i > r)? 1: l + r - i)<<'\n';
-        while(0 <= i - k and i + k < n and s[i - k] == s[i + k]) {
-            k++;
-        }
-        d1[i] = k--;
-        cout<<i<<' '<<d1[i]<<'\n';
-        
-        if(i + k > r) {
-            l = i - k, r = i + k;
-        }
-    }
-    cout<<"\npar:\n";
-    vl d2(n);
-    for(int i = 0, l = 0, r = -1; i < n; i++) {
-        int k = (i > r) ? 0: min(d2[l + r - i - 1], r - i + 1LL);
-        while(0 <= i - k and i + k < n and s[i - k] == s[i + k]) {
-            k++;
-        }
-        d2[i] = k--;
-        cout<<i<<' '<<k<<'\n';
-        if(i + k > r) {
-            l = i - k - 1, r = i + k;
-        }
-    }
-}
-
-
 int main(){
     ios::sync_with_stdio(0); cin.tie(0);
-    cin>>n;
-    cin>>s;
-    manacher();
+    ll n; cin>>n;
+    string s; cin>>s;
+    string s2 = s + s;
+    EerTree pt(s2);
 
-
+    ll ans = 0;
+    repx(i, 2, pt.t.size()) {
+        // cout<<pt.t[i].i<<' '<<pt.t[i].len<<' '<<s2.substr(pt.t[i].i, pt.t[i].len)<<' '<<pt.t[i].cnt<<'\n';
+        if(pt.t[i].i < n and pt.t[i].len <= n) {
+            ll val = pt.t[i].cnt;
+            // cout<<"el string "<<s2.substr(pt.t[i].i, pt.t[i].len)<<" aparece "<<val<<" veces\n";
+            ans += (val * val % MOD) * 1LL * pt.t[i].len % MOD;
+            ans %= MOD;
+        }
+    }
+    cout<<ans<<'\n';
     return 0;
 }

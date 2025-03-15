@@ -28,17 +28,46 @@ int main() {
         A[i] = to_num(s);
     }
 
-
-    ll aux = 0;
-    rep(i, 2000000) {
-        // valores posibles de k
-        aux += ll(i) / 2 - (i) / 3;
+    if(n == 1) {
+        cout<<"0\n";
+        return 0;
     }
-    cout<<aux<<'\n';
+    if(n == 2) {
+        cout<<"00\n";
+        return 0;
+    }
 
 
+    string ans = "00";
+    ll k = 1;
+    repx(i, 2, n) {
+        for(int j = 0; j <= i - 2 * k; j++) {
+            cout<<A[j]<<' '<<A[j + 2 * k]<<' '<<2 * A[j + k]<<'\n';
+        }
+        cout<<'\n';
+        
+        if(A[i - 2 * k] + A[i] == 2 * A[i - k]) {
+            ans += '1';
+            continue;
+        }
+        
+        k++;
+        while(k <= i / 2) {
+            bool pos = 1;
+            for(int j = 0; j <= i - 2 * k; j++) {
+                if(A[j] + A[j + 2 * k] != 2 * A[j + k]) {
+                    pos = 0;
+                    break;
+                }
+            }
+            if(pos) break;
+            k++;
+        }
+        if(k == i / 2 + 1) ans += '0';
+        else ans += '1';
+    }
 
-
+    cout<<ans<<'\n';
 
     return 0;
 }
