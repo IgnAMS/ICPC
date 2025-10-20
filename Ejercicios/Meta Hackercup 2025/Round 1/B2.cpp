@@ -106,8 +106,6 @@ void solve(int caso) {
     ll ans = 0;
     for(auto d: Divs) if(d <= A) {
         ll curr = (repartir(Conts[d]) * repartir(Conts[B / d])) % MOD;
-        // cout<<d<<" contribuye "<<curr<<" casos\n";
-        // cout<<repartir(Conts[d])<<" "<<repartir(Conts[B / d])<<"\n\n";
         ans += curr;
         ans %= MOD;
     }
@@ -130,7 +128,12 @@ int main(){
         }
     }
     // len(P) = 664579
-
+    // ll curr = 1, cont = 0;
+    // for(auto p: P) {
+    //     if(curr <= 1e18 / p) curr = curr * p, cont++;
+    // }
+    // cout<<curr<<" "<<cont<<"\n";
+    // 614889782588491410 15
 
     rep(i, t) solve(i);
     return 0;
